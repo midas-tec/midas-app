@@ -33,6 +33,7 @@ jobs:
 
   docker-build:
       runs-on: ubuntu-latest
+      needs: [java-build]
       permissions:
         contents: read
         packages: write
