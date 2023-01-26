@@ -37,7 +37,6 @@ jobs:
         contents: read
         packages: write
       steps:
-        - name: Checkout and setup docker BuildX
         - uses: actions/checkout@v3
         - uses: rlespinasse/github-slug-action@v3.x
         - uses: docker/setup-buildx-action@v2
