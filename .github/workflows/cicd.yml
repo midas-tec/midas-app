@@ -18,16 +18,33 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
+      packages: write
     steps:
     - uses: actions/checkout@v3
-    - name: Set up JDK 17
+    - name: Set up JDK 11
       uses: actions/setup-java@v3
       with:
-        java-version: '17'
+        java-version: '11'
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
       run: mvn -B -Dmaven.test.skip=true package --file pom.xml
 
+    - name: Login to Github Container Reg
+      uses:  docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: build and push docker image 
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: Dockerfile
+        push: true
+        tags: ghcr.io/midas-tec/midas-app:${{env.GITHUB_REF_SLUG}}
+        cache-from: type=registry,ref=ghcr.io/midas-tec/midas-app:${{env.GITHUB_REF_SLUG}}_cache
+        cache-to: type=registry,ref=ghcr.io/midas-tec/midas-app:${{env.GITHUB_REF_SLUG}}_cach,mode=max
